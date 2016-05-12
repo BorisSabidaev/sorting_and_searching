@@ -10,18 +10,16 @@ namespace lab2_ka
     {
         public static void Do(int[] A)
         {
+            Node n;
             for (int i = 0; i < A.Length; i++)
             {
-                lHeap = Merge(lHeap, new Node(A[i]));
+                n = new Node(A[i]);
+                lHeap = Merge( lHeap, n );
             }
 
             for (int i = 0; i < A.Length; i++)
             {
                 A[i] = lHeap.Key;
-                if (lHeap.left != null)
-                    lHeap.left.parent = null;
-                if (lHeap.right != null)
-                    lHeap.right.parent = null;
                 lHeap = Merge(lHeap.left, lHeap.right);
             }
 
@@ -32,7 +30,6 @@ namespace lab2_ka
         {
             public Node right;
             public Node left;
-            public Node parent;
             public int Key { get; }
             public int npl;
 
@@ -44,18 +41,30 @@ namespace lab2_ka
 
         private static Node Merge(Node n1, Node n2)
         {
+
             if (n1 == null)
                 return n2;
             if (n2 == null)
                 return n1;
 
             if (n1.Key > n2.Key)
-                Swap<Node>(ref n1, ref n2);
+                Swap(ref n1, ref n2);
             
             n1.right = Merge(n1.right, n2);
-            n1.npl = n1.right.npl + 1;
-
+            if (NPL(n1.left) < NPL(n1.right))
+                Swap(ref n1.left, ref n1.right);
+            if (n1.right != null)
+                n1.npl = n1.right.npl + 1;
+            
             return n1;
+        }
+
+        private static int NPL(Node n)
+        {
+            if (n == null)
+                return -1;
+            else
+                return n.npl;
         }
         private static void Swap<T>(ref T o1, ref T o2)
         {
